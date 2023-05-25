@@ -1,5 +1,5 @@
 library(dplyr)
-library(party)
+library(partykit)
 library(rpart)
 library(rpart.plot)
 library(e1071)
@@ -15,6 +15,8 @@ for (cn in c("Cleanliness", "Inflight.service", "Checkin.service", "Leg.room.ser
   test_data <- subset(test_data, !(test_data[[cn]] == 0))
 }
 
+train_data <- subset(train_data, !(is.na(train_data$Arrival.Delay.in.Minutes)))
+test_data <- subset(test_data, !(is.na(test_data$Arrival.Delay.in.Minutes)))
 #train_data <- subset(train_data, !(train_data$Checkin.service == 0))
 #test_data <- subset(test_data, !(test_data$Checkin.service == 0))
 
@@ -62,7 +64,7 @@ summary(testdata)
 
 
 traindata <- get_sample(train_data, 50000)
-testdata <- get_sample(test_data, 10000)
+testdata <- get_sample(test_data, 15000)
 for(cn in colnames(traindata)) {
   print(levels(traindata[[cn]]))
   print(levels(testdata[[cn]]))
@@ -70,8 +72,8 @@ for(cn in colnames(traindata)) {
 
 #formula <- satisfaction ~ Type.of.Travel + Class + Inflight.wifi.service + Online.boarding + Inflight.entertainment + Checkin.service + Arrival.Delay.in.Minutes
 formula <- satisfaction ~ Gender+Customer.Type+Age+Type.of.Travel+Class+Flight.Distance+Inflight.wifi.service+Departure.Arrival.time.convenient+Ease.of.Online.booking+Gate.location+Food.and.drink+Online.boarding+Seat.comfort+Inflight.entertainment+On.board.service+Leg.room.service+Baggage.handling+Checkin.service+Inflight.service+Cleanliness+Departure.Delay.in.Minutes+Arrival.Delay.in.Minutes
-hasil_ctree <- ctree(formula, data=traindata)
-plot(hasil_ctree)
+hasil_ctree <- ctree(formula, data=traindata, mincriterion = 0, maxdepth = 4)
+plot(hasil_ctree, type='simple')
 ctree_pred <- predict(hasil_ctree, newdata = testdata)
 confusionMatrix(ctree_pred, testdata$satisfaction)
 
