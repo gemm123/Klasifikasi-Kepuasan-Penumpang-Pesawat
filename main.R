@@ -81,3 +81,9 @@ hasil_rpart <- rpart(formula, data = traindata,control = rpart.control(minsplit 
 rpart.plot(hasil_rpart)
 rpart_pred <- predict(hasil_rpart, newdata = testdata, type ="class")
 confusionMatrix(rpart_pred, testdata$satisfaction)
+
+# rules ctree
+print(hasil_ctree)
+
+# rules rpart
+print(rpart.rules(hasil_rpart))
